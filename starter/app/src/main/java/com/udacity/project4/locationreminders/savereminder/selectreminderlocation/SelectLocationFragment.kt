@@ -30,6 +30,7 @@ import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
+import com.udacity.project4.locationreminders.savereminder.SaveReminderFragmentDirections
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
@@ -71,6 +72,15 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         return binding.root
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        binding.save.setOnClickListener {
+            // Navigate back to fragment
+            _viewModel.navigationCommand.value =
+                NavigationCommand.To(SelectLocationFragmentDirections.toSaveReminder())
+        }
+    }
+
     private fun setUpMap() {
 
         if (ActivityCompat.checkSelfPermission(
@@ -97,9 +107,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     private fun onLocationSelected(poiMarker: Marker) {
-        //        TODO: When the user confirms on the selected location,
-        //         send back the selected location details to the view model
-        //         and navigate back to the previous fragment to save the reminder and add the geofence
+        //TODO: When the user confirms on the selected location,
+        //send back the selected location details to the view model
+        //and navigate back to the previous fragment to save the reminder and add the geofence
         _viewModel.latitude.postValue(poiMarker.position.latitude)
         _viewModel.longitude.postValue(poiMarker.position.longitude)
         _viewModel.reminderSelectedLocationStr.postValue(poiMarker.title)

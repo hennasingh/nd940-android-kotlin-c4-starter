@@ -30,6 +30,10 @@
     <fragment
         android:id="@+id/selectLocationFragment"
         android:name="com.udacity.project4.locationreminders.savereminder.selectreminderlocation.SelectLocationFragment"
-        android:label="Select Location" />
+        android:label="Select Location">
+        <action
+            android:id="@+id/to_save_reminder"
+            app:destination="@id/saveReminderFragment" />
+    </fragment>
 
 </navigation>
