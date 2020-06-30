@@ -59,6 +59,7 @@ class ReminderListFragment : BaseFragment() {
             )
         )
     }
+
     private fun setupRecyclerView() {
         val adapter = RemindersListAdapter {
         }

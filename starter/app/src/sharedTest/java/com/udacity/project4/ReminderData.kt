@@ -34,14 +34,4 @@ object ReminderData {
             longitude = -122.086246
         )
     }
-
-    fun getReminderDTO(): ReminderDTO {
-        return ReminderDTO(
-            title = "Android Testing",
-            description = "ReminderListFragment",
-            location = "Ireland",
-            latitude = 37.422004,
-            longitude = -122.086246
-        )
-    }
 }

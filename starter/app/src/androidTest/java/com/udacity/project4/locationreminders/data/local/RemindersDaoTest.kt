@@ -5,7 +5,6 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
-import com.udacity.project4.ReminderData
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 
 import org.junit.Before;
@@ -42,7 +41,13 @@ class RemindersDaoTest {
             ApplicationProvider.getApplicationContext(),
             RemindersDatabase::class.java
         ).build()
-        reminder = ReminderData.getReminderDTO()
+        reminder = ReminderDTO(
+            title = "AndroidX",
+            description = "Reminder DAO Test",
+            location = "Udacity",
+            latitude = 37.399437,
+            longitude = -122.108060
+        )
     }
 
     @After
