@@ -35,5 +35,9 @@
             android:id="@+id/to_save_reminder"
             app:destination="@id/saveReminderFragment" />
     </fragment>
+    <activity
+        android:id="@+id/authenticationActivity"
+        android:name="com.udacity.project4.authentication.AuthenticationActivity"
+        android:label="AuthenticationActivity" />
 
 </navigation>
