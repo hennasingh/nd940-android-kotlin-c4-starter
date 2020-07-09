@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
+import com.udacity.project4.ReminderData
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import kotlinx.coroutines.Dispatchers
@@ -47,13 +48,7 @@ class RemindersLocalRepositoryTest {
 
         remindersRepository = RemindersLocalRepository(database.reminderDao(), Dispatchers.Main)
 
-        reminder = ReminderDTO(
-            title = "AndroidX",
-            description = "Reminder DAO Test",
-            location = "Udacity",
-            latitude = 37.399437,
-            longitude = -122.108060
-        )
+        reminder = ReminderData.getReminderDTO()
     }
 
     @After
@@ -67,10 +62,9 @@ class RemindersLocalRepositoryTest {
         remindersRepository.saveReminder(reminder)
 
         //WHEN - Reminder retrived by ID
-        val result = remindersRepository.getReminder(reminder.id)
+        val result = remindersRepository.getReminder(reminder.id) as Result.Success
 
         //THEN - Same reminder is returned
-        assertThat(result as Result.Success, `is`(true))
         assertThat(result.data.title, `is`(reminder.title))
         assertThat(result.data.description, `is`(reminder.description))
         assertThat(result.data.location, `is`(reminder.location))
@@ -81,8 +75,9 @@ class RemindersLocalRepositoryTest {
     @Test
     fun deleteReminder_returnEmptyList() = runBlocking {
         //GIVEN - Retrieve Reminders
-        val reminder = remindersRepository.getReminders() as Result.Success
-        assertThat(reminder.data, hasItem(reminder))
+        remindersRepository.saveReminder(reminder)
+        val reminders = remindersRepository.getReminders() as Result.Success
+        assertThat(reminders.data, hasItem(reminder))
 
         //WHEN - Delete all reminders
         remindersRepository.deleteAllReminders()
@@ -96,7 +91,7 @@ class RemindersLocalRepositoryTest {
     fun incorrectReminder_returnsError() = runBlocking {
         val incorrectReminder =
             remindersRepository.getReminder(UUID.randomUUID().toString()) as Result.Error
-        assertThat(incorrectReminder.message, `is`("Reminder Not Found"))
+        assertThat(incorrectReminder.message, `is`("Reminder not found!"))
     }
 
 
