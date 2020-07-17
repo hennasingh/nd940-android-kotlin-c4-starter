@@ -94,7 +94,7 @@ class SaveReminderFragment : BaseFragment() {
                     .addOnFailureListener {
                         Toast.makeText(activity, "Adding Geofence Failed", Toast.LENGTH_SHORT)
                             .show()
-                        Log.d(TAG, "Geofence could not be added")
+                        Log.d(TAG, "Geofence could not be added $it")
                     }
             }
         }

@@ -136,6 +136,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     .position(poi.latLng)
                     .title(poi.name)
             )
+            _viewModel.selectedPOI.postValue(poi)
             marker?.let {
                 onLocationSelected(it)
             }
@@ -193,6 +194,15 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setUpMap()
         setMapStyle(map)
         setPoiClick(map)
+
+        map.setOnMapClickListener {
+            marker?.remove()
+
+            marker = map.addMarker(
+                MarkerOptions().position(it).title("Test Location")
+            )
+            _viewModel.updateLocationForTest(it, "Test")
+        }
     }
 
 
