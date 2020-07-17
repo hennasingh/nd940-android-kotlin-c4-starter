@@ -44,6 +44,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var lastLocation: Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var marker: Marker? = null
 
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 1
@@ -69,16 +70,15 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
         binding.save.setOnClickListener {
-            // Navigate back to fragment
-            _viewModel.navigationCommand.value =
-                NavigationCommand.To(SelectLocationFragmentDirections.toSaveReminder())
+            if (marker == null) {
+                _viewModel.showSnackBar.postValue("Select a Location for Reminder")
+            } else {
+                _viewModel.navigationCommand.postValue(NavigationCommand.Back)
+            }
         }
+        return binding.root
     }
 
     private fun setUpMap() {
@@ -92,11 +92,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             map.isMyLocationEnabled = true
-            Toast.makeText(
-                context as Activity,
-                "Click on top right button to see your location",
-                Toast.LENGTH_SHORT
-            ).show()
         } else {
             ActivityCompat.requestPermissions(
                 context as Activity,
@@ -104,6 +99,22 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 REQUEST_LOCATION_PERMISSION
             )
         }
+        fusedLocationClient.lastLocation.addOnSuccessListener {
+            if (it != null) {
+                lastLocation = it
+                val currentLatLng = LatLng(it.latitude, it.longitude)
+                placeMarkerOnMap(currentLatLng)
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+            }
+        }
+    }
+
+    private fun placeMarkerOnMap(location: LatLng) {
+
+        val markerOptions = MarkerOptions().position(location)
+        map.addMarker(markerOptions)
+
+
     }
 
     private fun onLocationSelected(poiMarker: Marker) {
@@ -117,13 +128,17 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private fun setPoiClick(map: GoogleMap) {
         map.setOnPoiClickListener { poi ->
-            val poiMarker = map.addMarker(
+
+            marker?.remove()
+
+            marker = map.addMarker(
                 MarkerOptions()
                     .position(poi.latLng)
                     .title(poi.name)
             )
-            poiMarker.showInfoWindow()
-            onLocationSelected(poiMarker)
+            marker?.let {
+                onLocationSelected(it)
+            }
         }
     }
 
@@ -175,12 +190,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         map = googleMap
 
         map.uiSettings.isZoomControlsEnabled = true
-        //map.moveCamera(CameraUpdateFactory.zoomIn())
         setUpMap()
         setMapStyle(map)
         setPoiClick(map)
-
-
     }
 
 
